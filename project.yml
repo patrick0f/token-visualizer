@@ -1,0 +1,24 @@
+name: TokenVisualizer
+options:
+  bundleIdPrefix: com.tokenvisualizer
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "16.0"
+targets:
+  TokenVisualizer:
+    type: application
+    platform: macOS
+    sources:
+      - TokenVisualizer
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tokenvisualizer.app
+        MACOSX_DEPLOYMENT_TARGET: "14.0"
+        SWIFT_VERSION: "5.9"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_LSUIElement: YES
+        INFOPLIST_KEY_CFBundleDisplayName: TokenVisualizer
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGNING_ALLOWED: "YES"
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_ENTITLEMENTS: TokenVisualizer/TokenVisualizer.entitlements
