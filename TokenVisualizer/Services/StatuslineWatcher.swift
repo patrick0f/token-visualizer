@@ -12,7 +12,8 @@ struct StatuslineRateLimits: Codable {
     func toUsageResponse() -> UsageResponse {
         UsageResponse(
             fiveHour: fiveHour.toUsageBucket(),
-            sevenDay: sevenDay.toUsageBucket()
+            sevenDay: sevenDay.toUsageBucket(),
+            extraUsage: nil
         )
     }
 }

@@ -32,13 +32,35 @@ struct UsageBucket: Codable, Equatable {
     }
 }
 
+struct ExtraUsage: Codable, Equatable {
+    let isEnabled: Bool
+    let monthlyLimit: Double?
+    let usedCredits: Double?
+    let utilization: Double?
+
+    enum CodingKeys: String, CodingKey {
+        case isEnabled = "is_enabled"
+        case monthlyLimit = "monthly_limit"
+        case usedCredits = "used_credits"
+        case utilization
+    }
+
+    var formattedCost: String {
+        guard let credits = usedCredits else { return "$0.00" }
+        let dollars = credits / 100.0
+        return String(format: "$%.2f", dollars)
+    }
+}
+
 struct UsageResponse: Codable, Equatable {
     let fiveHour: UsageBucket
     let sevenDay: UsageBucket
+    let extraUsage: ExtraUsage?
 
     enum CodingKeys: String, CodingKey {
         case fiveHour = "five_hour"
         case sevenDay = "seven_day"
+        case extraUsage = "extra_usage"
     }
 }
 

@@ -31,7 +31,15 @@ final class UsageAPIService: ObservableObject {
     private var tokenExpiry: Date?
 
     func updateFromStatusline(_ response: UsageResponse) {
-        usage = response
+        if let existing = usage {
+            var merged = response
+            if merged.extraUsage == nil, let extra = existing.extraUsage {
+                merged = UsageResponse(fiveHour: merged.fiveHour, sevenDay: merged.sevenDay, extraUsage: extra)
+            }
+            usage = merged
+        } else {
+            usage = response
+        }
         lastUpdated = Date()
         lastSource = "statusline"
         error = nil

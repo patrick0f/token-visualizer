@@ -17,6 +17,42 @@ struct UsagePopover: View {
                     percentage: usage.sevenDay.utilization,
                     resetText: usage.sevenDay.timeUntilReset
                 )
+
+                if let extra = usage.extraUsage, extra.isEnabled {
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack {
+                            Text("Extra usage")
+                                .font(.system(size: 13, weight: .semibold))
+                            Text(extra.formattedCost)
+                                .font(.system(size: 13))
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            if let util = extra.utilization {
+                                Text("\(Int(util))%")
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .monospacedDigit()
+                            }
+                        }
+                        if let util = extra.utilization {
+                            GeometryReader { geo in
+                                ZStack(alignment: .leading) {
+                                    RoundedRectangle(cornerRadius: 3)
+                                        .fill(Color.gray.opacity(0.3))
+                                        .frame(height: 6)
+                                    RoundedRectangle(cornerRadius: 3)
+                                        .fill(.green)
+                                        .frame(width: max(0, geo.size.width * util / 100), height: 6)
+                                }
+                            }
+                            .frame(height: 6)
+                        }
+                        if let limit = extra.monthlyLimit {
+                            Text("Limit: $\(String(format: "%.0f", limit / 100))/mo")
+                                .font(.system(size: 11))
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
             } else if let error = api.error {
                 HStack {
                     Image(systemName: "exclamationmark.triangle.fill")
