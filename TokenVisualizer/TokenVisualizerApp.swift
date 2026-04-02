@@ -12,6 +12,7 @@ struct TokenVisualizerApp: App {
                 .onAppear {
                     guard !hasStarted else { return }
                     hasStarted = true
+                    NotificationService.shared.requestPermission()
                     setupWatcher()
                     Task { await api.fetch() }
                     startAutoRefresh()

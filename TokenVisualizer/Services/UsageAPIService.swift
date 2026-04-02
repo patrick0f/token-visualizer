@@ -43,6 +43,7 @@ final class UsageAPIService: ObservableObject {
         lastUpdated = Date()
         lastSource = "statusline"
         error = nil
+        NotificationService.shared.checkThresholds(usage: usage!)
     }
 
     func fetch() async {
@@ -56,6 +57,8 @@ final class UsageAPIService: ObservableObject {
             let decoded = try JSONDecoder().decode(UsageResponse.self, from: data)
             usage = decoded
             lastUpdated = Date()
+            lastSource = "api"
+            NotificationService.shared.checkThresholds(usage: decoded)
         } catch let err as KeychainError {
             error = err.localizedDescription
         } catch let err as APIError {
