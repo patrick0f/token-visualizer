@@ -2,7 +2,7 @@ import Foundation
 
 struct UsageBucket: Codable, Equatable {
     let utilization: Double
-    let resetsAt: String
+    let resetsAt: String?
 
     enum CodingKeys: String, CodingKey {
         case utilization
@@ -10,6 +10,7 @@ struct UsageBucket: Codable, Equatable {
     }
 
     var resetDate: Date? {
+        guard let resetsAt else { return nil }
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         if let date = formatter.date(from: resetsAt) { return date }
@@ -18,7 +19,7 @@ struct UsageBucket: Codable, Equatable {
     }
 
     var timeUntilReset: String {
-        guard let reset = resetDate else { return "Unknown" }
+        guard let reset = resetDate else { return "N/A" }
         let interval = reset.timeIntervalSince(Date())
         if interval <= 0 { return "Now" }
 
