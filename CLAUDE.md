@@ -13,14 +13,18 @@ These rules govern how Claude behaves before, during, and after any task.
 - **MUST** describe the approach and wait for explicit approval before writing code.
 - **MUST** ask clarifying questions if requirements are ambiguous — do not assume and proceed.
 - **MUST** if a task touches > 3 files, stop and break it into smaller subtasks first. Present the breakdown and get approval before starting any of them.
-- **MUST** read LEARNING.md at the start of any non-trivial session to calibrate communication style.
+- **SHOULD** for multi-step tasks, state a brief plan with verification:
+  ```
+  1. [Step] → verify: [check]
+  2. [Step] → verify: [check]
+  ```
 
 ### While Coding
 
 - **MUST NOT** jump ahead to the next logical step without confirmation. Do one thing, stop, wait.
 - **MUST NOT** refactor, rename, or restructure code that wasn't explicitly asked to change. Touch only what was asked.
 - **MUST NOT** make broad "while I'm here" improvements — scope is exactly what was requested.
-- When given a paste of code or text, find the gap between what it shows and what is being asked. Do not summarize it back.
+- **MUST** remove imports/variables/functions that YOUR changes made unused. Do not remove pre-existing dead code unless asked.
 
 ### After Writing Code
 
@@ -37,15 +41,6 @@ These rules govern how Claude behaves before, during, and after any task.
 - **MUST** when the user corrects behavior, add a new rule to this file immediately so it never recurs.
 - **MUST NOT** add commands, file structure, or architecture descriptions to CLAUDE.md — Claude explores the codebase directly. Only add things Claude cannot discover on its own (behavior rules, coding standards, shortcuts).
 
-### Communication Style (from LEARNING.md)
-
-- **Bottom line first.** State the answer, then support it. Never build to a conclusion.
-- **"wait"** = misalignment caught in real time. Pivot immediately and cleanly. Do not explain why the original answer was still relevant.
-- **"so..."** at the start of a message = the user is testing their mental model, not summarizing. Push back if it's slightly off — this is the highest-leverage correction point.
-- **Short answers first.** Depth on request only.
-- **Intuition before formalism.** If the user asks for "simple" or "intuitive", the formal version didn't land. Give an analogy first.
-- **"ohhh ok" / "i see"** = done. Move on immediately.
-
 ---
 
 ## Implementation Best Practices
@@ -59,15 +54,14 @@ These rules ensure maintainability, safety, and developer velocity.
 
 ### 1 - Before Coding
 
-- **BP-1 (MUST)** Ask the user clarifying questions.
-- **BP-2 (SHOULD)** Draft and confirm an approach for complex work.
-- **BP-3 (SHOULD)** If >= 2 approaches exist, list clear pros and cons.
+- **BP-1 (SHOULD)** Draft and confirm an approach for complex work.
+- **BP-2 (SHOULD)** If >= 2 approaches exist, list clear pros and cons.
 
 ---
 
 ### 2 - While Coding
 
-- **C-1 (MUST)** Follow TDD: scaffold stub -> write failing test -> implement.
+- **C-1 (MUST)** Follow TDD for bug fixes and non-trivial features: scaffold stub -> write failing test -> implement. Use judgment for trivial changes.
 - **C-2 (MUST)** Name functions with existing domain vocabulary for consistency.
 - **C-3 (SHOULD NOT)** Introduce classes when small testable functions suffice.
 - **C-4 (SHOULD)** Prefer simple, composable, testable functions.
@@ -129,11 +123,6 @@ When evaluating whether a function is good, use this checklist:
 6. Is it testable without mocking core infrastructure (DB, redis, etc.)? If not, can it be integration-tested?
 7. Does it have hidden untested dependencies that could be factored into arguments?
 8. Brainstorm 3 better function names — is the current one best and consistent with the codebase?
-
-**MUST NOT** refactor out a separate function unless:
-- It will be reused elsewhere, OR
-- It's the only way to unit-test otherwise untestable logic, OR
-- The original is extremely hard to follow even with self-explanatory code
 
 ---
 
