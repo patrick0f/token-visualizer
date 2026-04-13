@@ -18,7 +18,7 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_LSUIElement: YES
         INFOPLIST_KEY_CFBundleDisplayName: TokenVisualizer
-        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_STYLE: Manual
         CODE_SIGNING_ALLOWED: "YES"
-        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_IDENTITY: "TokenVisualizer"
         CODE_SIGN_ENTITLEMENTS: TokenVisualizer/TokenVisualizer.entitlements

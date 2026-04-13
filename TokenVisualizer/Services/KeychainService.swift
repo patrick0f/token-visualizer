@@ -19,28 +19,34 @@ struct KeychainService {
     static let serviceName = "Claude Code-credentials"
 
     static func readCredentials() throws -> OAuthCredentials {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: serviceName,
-            kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne
-        ]
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/security")
+        process.arguments = ["find-generic-password", "-s", serviceName, "-w"]
 
-        var result: AnyObject?
-        let status = SecItemCopyMatching(query as CFDictionary, &result)
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = Pipe()
 
-        guard status != errSecItemNotFound else {
+        try process.run()
+        process.waitUntilExit()
+
+        guard process.terminationStatus == 0 else {
             throw KeychainError.itemNotFound
         }
-        guard status == errSecSuccess else {
-            throw KeychainError.osError(status)
+
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        guard !data.isEmpty else {
+            throw KeychainError.unexpectedData
         }
-        guard let data = result as? Data else {
+
+        // security -w outputs base64-encoded password data with a trailing newline
+        let raw = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        guard let decoded = Data(base64Encoded: raw) ?? raw.data(using: .utf8) else {
             throw KeychainError.unexpectedData
         }
 
         do {
-            let wrapper = try JSONDecoder().decode(KeychainData.self, from: data)
+            let wrapper = try JSONDecoder().decode(KeychainData.self, from: decoded)
             return wrapper.claudeAiOauth
         } catch {
             throw KeychainError.unexpectedData
